@@ -127,7 +127,7 @@ python finetune.py -c config/finetune/ucf101_c3d.jsonnet \
 python finetune.py -c config/finetune/ucf101_resnet18.jsonnet \
                    --mc exps/pretext-resnet18/model_best.pth.tar \
                    -e exps/ucf101-resnet18
-#     Architecture: S3D-G ACC@1=85.28%
+#     Architecture: S3D-G ACC@1=89.9%
 python finetune.py -c config/finetune/ucf101_s3dg.jsonnet \
                    --mc exps/pretext-s3dg/model_best.pth.tar \
                    -e exps/ucf101-s3dg
@@ -145,7 +145,7 @@ python finetune.py -c config/finetune/hmdb51_c3d.jsonnet \
 python finetune.py -c config/finetune/hmdb51_resnet18.jsonnet \
                    --mc exps/pretext-resnet18/model_best.pth.tar \
                    -e exps/hmdb51-resnet18
-#     Architecture: S3D-G ACC@1=64.7%
+#     Architecture: S3D-G ACC@1=59.6%
 python finetune.py -c config/finetune/hmdb51_s3dg.jsonnet \
                    --mc exps/pretext-s3dg/model_best.pth.tar \
                    -e exps/hmdb51-s3dg

@@ -1,6 +1,8 @@
 # RSPNet
 Official Pytorch implementation for AAAI2021 paper "[RSPNet: Relative Speed Perception for Unsupervised Video Representation Learning][RSPNET]"
 
+[[Supplementary Materials]](https://github.com/PeihaoChen/RSPNet/blob/main/supplementary.pdf)
+
 ![](https://github.com/PeihaoChen/RSPNet/blob/main/overview.png)
 
 ## Getting Started

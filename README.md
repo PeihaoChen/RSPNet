@@ -193,7 +193,7 @@ python retrieval.py -c config/retrieval/ucf101_resnet18.jsonnet \
 
 The video retrieval result in our paper
 
-| Architecture | $k=1$ | $k=5$ | $k=10$ | $k=20$ | $k=50$ |
+| Architecture | k=1 | k=5 | k=10 | k=20 | k=50 |
 |:------------:|:-------------------:|:------------------:|:-----------------:|:--------------:|:--------------:|
 |C3D|36.0|56.7|66.5|76.3|87.7|
 |ResNet-18|41.1|59.4|68.4|77.8|88.7|

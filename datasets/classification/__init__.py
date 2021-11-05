@@ -268,15 +268,23 @@ class DataLoaderFactoryV3:
     def get_temporal_transform(self, split):
         tt_cfg = self.cfg.get_config('temporal_transforms')
         size = tt_cfg.get_int('size')
-        tt_type = tt_cfg.get_string('type', default='clip')
+        tt_type: str = tt_cfg.get_string('type', default='clip')
         logger.info('Temporal transform type: %s', tt_type)
 
         if split == 'train':
             if tt_type == 'clip':
-                crop = transforms_temporal.RandomStrideCrop(
-                    size=size,
-                    strides=tt_cfg.get_list('strides'),
-                )
+                if tt_cfg.get_bool("force_n_crop"):
+                    n = tt_cfg.get_int('validate.final_n_crop')
+                    crop = transforms_temporal.EvenNCrop(
+                        size=size,
+                        stride=tt_cfg.get_int('validate.stride'),
+                        n=n,
+                    )
+                else:
+                    crop = transforms_temporal.RandomStrideCrop(
+                        size=size,
+                        strides=tt_cfg.get_list('strides'),
+                    )
             elif tt_type == 'cover':
                 crop = transforms_temporal.Cover(size=size)
             else:

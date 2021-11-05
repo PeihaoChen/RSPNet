@@ -1,9 +1,9 @@
 # RSPNet
 Official Pytorch implementation for AAAI2021 paper "[RSPNet: Relative Speed Perception for Unsupervised Video Representation Learning][RSPNET]"
 
-[[Supplementary Materials]](resources/supplementary.pdf)
+[[Supplementary Materials]](supplementary.pdf)
 
-![](resources/overview.png)
+![](overview.png)
 
 ## Getting Started
 ### Install Dependencies
@@ -188,7 +188,7 @@ The pretrained model can also be used in searching relevant videos based on the 
 export CUDA_VISIBLE_DEVICES=0 # use single GPU 
 python retrieval.py -c config/retrieval/ucf101_resnet18.jsonnet \
                     --mc exps/pretext-resnet18/model_best.pth.tar \
-                    -e exps/retrieval-resnet18 \      
+                    -e exps/retrieval-resnet18    
 ```
 
 The video retrieval result in our paper
@@ -211,7 +211,7 @@ python visualization.py -c config/pretrain/s3dg.jsonnet \
 The cam visualization results will be plotted in png files like
 
 <div align="center">
-<img src=resources/visualization.png width=50% />
+<img src=visualization.png width=50% />
 </div>
 
 

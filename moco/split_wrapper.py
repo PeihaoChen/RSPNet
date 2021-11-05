@@ -92,6 +92,7 @@ class MultiTaskWrapper(nn.Module):
         self.num_classes = num_classes
         self.groups = groups
         self.fc_type = fc_type
+        self.feat = None
 
         logger.warning(f'{self.__class__} using groups: {groups}')
 
@@ -125,19 +126,19 @@ class MultiTaskWrapper(nn.Module):
                 self.fc2 = self._get_linear_fc(feat_dim, 1)  # use for speed binary classification like speednet
 
     def forward(self, x: Tensor):
-        feat: Tensor = self.encoder.get_feature(x)
+        self.feat: Tensor = self.encoder.get_feature(x)
 
         if self.finetune:
-            x3 = self.avg_pool(feat)
+            x3 = self.avg_pool(self.feat)
             x3 = x3.flatten(1)
             x3 = self.fc(x3)
             return x3
         else:
             if self.groups == 1:
-                x1 = self.fc1(feat)
-                x2 = self.fc2(feat)
+                x1 = self.fc1(self.feat)
+                x2 = self.fc2(self.feat)
             elif self.groups == 2:
-                feat1, feat2 = feat.chunk(2, 1)
+                feat1, feat2 = self.feat.chunk(2, 1)
                 x1 = self.fc1(feat1)
                 x2 = self.fc2(feat2)
             else:
@@ -149,6 +150,15 @@ class MultiTaskWrapper(nn.Module):
             else:
                 x2 = F.normalize(x2, dim=1)
             return x1, x2
+
+    def _get_last_feature(self):
+        return self.feat
+
+    def _get_fc_weight(self):
+        with torch.no_grad():
+            w1 = self.fc1[2].weight.data
+            w2 = self.fc2[2].weight.data
+        return w1, w2
 
     @staticmethod
     def _get_linear_fc(feat_dim: int, moco_dim: int):

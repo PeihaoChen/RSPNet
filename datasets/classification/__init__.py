@@ -61,13 +61,13 @@ class DataLoaderFactoryV3:
         self.final_validate = final_validate
         self.debug = debug
 
-    def build(self, vid=False, split='train', device=None):
+    def build(self, vid=False, split='train', device=None, visualization=False):
         logger.info('Building Dataset: VID: %s, Split=%s', vid, split)
 
         ds_name = self.cfg.get_string('dataset.name')
 
         if vid:
-            cpu_transform, gpu_transform = self.get_transform_vid()
+            cpu_transform, gpu_transform = self.get_transform_vid(visualization)
 
             size = self.cfg.get_int('temporal_transforms.size')
             strides = self.cfg.get_list('temporal_transforms.strides')
@@ -161,7 +161,7 @@ class DataLoaderFactoryV3:
             )
         return normalize
 
-    def get_transform_vid(self):
+    def get_transform_vid(self, visualization=False):
         arch = self.cfg.get_string('model.arch')
         aug_plus = self.cfg.get_bool('moco.aug_plus')
 
@@ -180,7 +180,13 @@ class DataLoaderFactoryV3:
 
         normalize = self._get_normalize()
 
-        if not aug_plus:
+        if visualization:
+            gpu_transform = transforms_tensor.Compose([
+                transforms_spatial.ToTensor(),
+                transforms_spatial.Resize(size),
+                #normalize,
+            ])
+        elif not aug_plus:
             gpu_transform = transforms_tensor.Compose([
                 transforms_spatial.ToTensor(),
                 transforms_spatial.Resize(size),

@@ -1,9 +1,9 @@
 # RSPNet
 Official Pytorch implementation for AAAI2021 paper "[RSPNet: Relative Speed Perception for Unsupervised Video Representation Learning][RSPNET]"
 
-[[Supplementary Materials]](https://github.com/PeihaoChen/RSPNet/blob/main/supplementary.pdf)
+[[Supplementary Materials]](resources/supplementary.pdf)
 
-![](https://github.com/PeihaoChen/RSPNet/blob/main/overview.png)
+![](resources/overview.png)
 
 ## Getting Started
 ### Install Dependencies
@@ -180,6 +180,39 @@ python finetune.py -c config/finetune/smth_smth_s3dg.jsonnet \
 |    R(2+1)D   |     Kinetics-400    |         200        |   [Download link](https://github.com/PeihaoChen/RSPNet/releases/download/pretrained_model/model_best_r21d_200epoch.pth.tar)   |      81.1      |      44.6      |
 |   ResNet-18  |     Kinetics-400    |         200        |   [Download link](https://github.com/PeihaoChen/RSPNet/releases/download/pretrained_model/model_best_resnet18_200epoch.pth.tar)   |      74.3      |      41.8      |
 |      C3D     |     Kinetics-400    |         200        |   [Download link](https://github.com/PeihaoChen/RSPNet/releases/download/pretrained_model/model_best_c3d_200epoch.pth.tar)   |      76.7      |      44.6      |
+
+
+## Video Retrieval
+The pretrained model can also be used in searching relevant videos based on the given query video.
+```python
+export CUDA_VISIBLE_DEVICES=0 # use single GPU 
+python retrieval.py -c config/retrieval/ucf101_resnet18.jsonnet \
+                    --mc exps/pretext-resnet18/model_best.pth.tar \
+                    -e exps/retrieval-resnet18 \      
+```
+
+The video retrieval result in our paper
+
+| Architecture | $k=1$ | $k=5$ | $k=10$ | $k=20$ | $k=50$ |
+|:------------:|:-------------------:|:------------------:|:-----------------:|:--------------:|:--------------:|
+|C3D|36.0|56.7|66.5|76.3|87.7|
+|ResNet-18|41.1|59.4|68.4|77.8|88.7|
+
+## Visualization
+We further visualize the region of interest (RoI) that contributes most to the similarity score using the class activation map (CAM) technique.
+```python
+export CUDA_VISIBLE_DEVICES=0,1
+python visualization.py -c config/pretrain/s3dg.jsonnet \
+                        --load-model exps/pretext-s3dg/model_best.pth.tar \
+                        -e exps/visual-s3dg \
+                        -x '{batch_size: 1}'
+```
+
+The cam visualization results will be plotted in png files like
+
+<div align="center">
+<img src=resources/visualization.png width=50% />
+</div>
 
 
 ## Troubleshoot

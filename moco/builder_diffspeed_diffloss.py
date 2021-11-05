@@ -323,6 +323,8 @@ class MoCoDiffLossTwoFc(nn.Module):
             param_k.data.copy_(param_q.data)  # initialize
             param_k.requires_grad = False  # not update by gradient
 
+        self.gap = nn.AdaptiveAvgPool3d((1, 1, 1))
+
         # create the queue
         self.register_buffer("queue", torch.randn(dim, K))
         self.queue = nn.functional.normalize(self.queue, dim=0)
@@ -443,6 +445,49 @@ class MoCoDiffLossTwoFc(nn.Module):
         k_negative_A, k_negative_M = self._forward_encoder_k(im_k_negative)
 
         return im_q_real, im_k_real, k_negative_A, k_negative_M
+
+    @torch.no_grad()
+    def cam_visualize(self, im_q, im_k):
+        """
+        Input:
+            im_q: a batch of query images
+            im_k: a batch of key images
+        Output:
+            Ms_qA, Ms_qM, Ms_kA, Ms_kM: CAM visualization results
+        """
+        if self.diff_speed is not None:
+            im_q, im_k, _, _ = self._diff_speed(im_q, im_k)  # Update im_q, im_k
+            # forward and get encoded feature
+            k_A, k_M = self._forward_encoder_k(im_k)
+            k_F = self.encoder_k._get_last_feature()
+
+        # forward and get encoded feature
+        q_A, q_M = self.encoder_q(im_q)  # queries: NxC
+        q_F = self.encoder_q._get_last_feature()
+
+        q_X = self.gap(q_F).reshape(q_F.shape[0], q_F.shape[1])
+        k_X = self.gap(k_F).reshape(k_F.shape[0], k_F.shape[1])
+
+        q_wA, q_wM = self.encoder_q._get_fc_weight()
+        k_wA, k_wM = self.encoder_k._get_fc_weight()
+
+        Ms_qA = torch.einsum('bc,bcthw->bthw',
+        [torch.einsum('bn,nc->bc', 
+        [torch.einsum('nc,bc->bn', [k_wA, k_X]), q_wA]),q_F])
+
+        Ms_qM = torch.einsum('bc,bcthw->bthw',
+        [torch.einsum('bn,nc->bc', 
+        [torch.einsum('nc,bc->bn', [k_wM, k_X]), q_wM]),q_F])
+
+        Ms_kA = torch.einsum('bc,bcthw->bthw',
+        [torch.einsum('bn,nc->bc', 
+        [torch.einsum('nc,bc->bn', [q_wA, q_X]), k_wA]),k_F])
+
+        Ms_kM = torch.einsum('bc,bcthw->bthw',
+        [torch.einsum('bn,nc->bc', 
+        [torch.einsum('nc,bc->bn', [q_wM, q_X]), k_wM]),k_F])
+
+        return Ms_qA, Ms_qM, Ms_kA, Ms_kM
 
     def forward(self, im_q, im_k):
         """

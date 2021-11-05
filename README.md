@@ -1,9 +1,9 @@
 # RSPNet
 Official Pytorch implementation for AAAI2021 paper "[RSPNet: Relative Speed Perception for Unsupervised Video Representation Learning][RSPNET]"
 
-[[Supplementary Materials]](supplementary.pdf)
+[[Supplementary Materials]](resources/supplementary.pdf)
 
-![](overview.png)
+![](resources/overview.png)
 
 ## Getting Started
 ### Install Dependencies
@@ -211,7 +211,7 @@ python visualization.py -c config/pretrain/s3dg.jsonnet \
 The cam visualization results will be plotted in png files like
 
 <div align="center">
-<img src=visualization.png width=50% />
+<img src=resources/visualization.png width=50% />
 </div>
 
 
